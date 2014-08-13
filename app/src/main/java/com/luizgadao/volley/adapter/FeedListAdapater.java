@@ -54,64 +54,73 @@ public class FeedListAdapater extends BaseAdapter
     @Override
     public View getView(int position, View convertView, ViewGroup viewGroup) {
 
+        // pattern view holder
+        ViewHolder holder;
+
         if (inflater == null)
             inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        if (convertView == null)
+        if (convertView == null) {
             convertView = inflater.inflate(R.layout.feed_item, null);
+
+            holder = new ViewHolder();
+            holder.name = (TextView) convertView.findViewById(R.id.name);
+            holder.timestamp = (TextView) convertView.findViewById(R.id.timestamp);
+            holder.statusMsg = (TextView) convertView.findViewById(R.id.txtStatusMsg);
+            holder.url = (TextView) convertView.findViewById(R.id.txtUrl);
+            holder.profilePic = (NetworkImageView) convertView.findViewById(R.id.profilePic);
+            holder.feedImageView = (FeedImageView) convertView.findViewById(R.id.feedImage1);
+
+            convertView.setTag( holder );
+
+        }
+        else
+            holder = (ViewHolder) convertView.getTag();
 
         if (imageLoader == null)
             imageLoader = AppController.getInstance().getImageLoader();
 
-        TextView name = (TextView) convertView.findViewById(R.id.name);
-        TextView timestamp = (TextView) convertView.findViewById(R.id.timestamp);
-        TextView statusMsg = (TextView) convertView.findViewById(R.id.txtStatusMsg);
-        TextView url = (TextView) convertView.findViewById(R.id.txtUrl);
-
-        NetworkImageView profilePic = (NetworkImageView) convertView.findViewById(R.id.profilePic);
-        FeedImageView feedImageView = (FeedImageView) convertView.findViewById(R.id.feedImage1);
-
         FeedItem item = feedItems.get(position);
 
-        name.setText(item.getName());
+        holder.name.setText(item.getName());
 
         // Converting timestamp into x ago format
         CharSequence timeAgo = DateUtils.getRelativeTimeSpanString(
                 Long.parseLong( item.getTimeStamp() ),
                 System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS);
 
-        timestamp.setText(timeAgo);
+        holder.timestamp.setText(timeAgo);
 
         // Chcek for empty status message
         if (!TextUtils.isEmpty(item.getStatus())) {
-            statusMsg.setText(item.getStatus());
-            statusMsg.setVisibility(View.VISIBLE);
+            holder.statusMsg.setText(item.getStatus());
+            holder.statusMsg.setVisibility(View.VISIBLE);
         } else {
             // status is empty, remove from view
-            statusMsg.setVisibility(View.GONE);
+            holder.statusMsg.setVisibility(View.GONE);
         }
 
         // Checking for null feed url
         if (item.getUrl() != null) {
-            url.setText(Html.fromHtml("<a href=\"" + item.getUrl() + "\">"
+            holder.url.setText(Html.fromHtml("<a href=\"" + item.getUrl() + "\">"
                     + item.getUrl() + "</a> "));
 
             // Making url clickable
-            url.setMovementMethod(LinkMovementMethod.getInstance());
-            url.setVisibility(View.VISIBLE);
+            holder.url.setMovementMethod(LinkMovementMethod.getInstance());
+            holder.url.setVisibility(View.VISIBLE);
         } else {
             // url is null, remove from the view
-            url.setVisibility(View.GONE);
+            holder.url.setVisibility(View.GONE);
         }
 
         // user profile pic
-        profilePic.setImageUrl(item.getProfilePic(), imageLoader);
+        holder.profilePic.setImageUrl(item.getProfilePic(), imageLoader);
 
         // Feed image
         if (item.getImge() != null) {
-            feedImageView.setImageUrl(item.getImge(), imageLoader);
-            feedImageView.setVisibility(View.VISIBLE);
-            feedImageView
+            holder.feedImageView.setImageUrl(item.getImge(), imageLoader);
+            holder.feedImageView.setVisibility(View.VISIBLE);
+            holder.feedImageView
                     .setResponseObserver(new FeedImageView.ResponseObserver() {
                         @Override
                         public void onError() {
@@ -122,9 +131,19 @@ public class FeedListAdapater extends BaseAdapter
                         }
                     });
         } else {
-            feedImageView.setVisibility(View.GONE);
+            holder.feedImageView.setVisibility(View.GONE);
         }
 
         return convertView;
+    }
+
+    static class ViewHolder
+    {
+        TextView name;
+        TextView timestamp;
+        TextView statusMsg;
+        TextView url;
+        NetworkImageView profilePic;
+        FeedImageView feedImageView;
     }
 }

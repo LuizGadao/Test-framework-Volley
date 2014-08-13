@@ -48,11 +48,25 @@ public class CustomListAdapter extends BaseAdapter
 
     @Override
     public View getView(int position, View convertView, ViewGroup viewGroup) {
+
+        ViewHolder holder;
+
         if (inflater == null)
             inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        if (convertView == null)
+        if (convertView == null) {
             convertView = inflater.inflate(R.layout.list_row, null);
+
+            holder = new ViewHolder();
+            holder.title = (TextView) convertView.findViewById(R.id.title);
+            holder.rating = (TextView) convertView.findViewById(R.id.rating);
+            holder.genre = (TextView) convertView.findViewById(R.id.genre);
+            holder.year = (TextView) convertView.findViewById(R.id.releaseYear);
+
+            convertView.setTag( holder );
+        }
+        else
+            holder = (ViewHolder) convertView.getTag();
 
         if (imageLoader == null)
             imageLoader = AppController.getInstance().getImageLoader();
@@ -63,19 +77,15 @@ public class CustomListAdapter extends BaseAdapter
         //error load
         //thumbNail.setErrorImageResId(R.drawable.ic_error_image);
 
-        TextView title = (TextView) convertView.findViewById(R.id.title);
-        TextView rating = (TextView) convertView.findViewById(R.id.rating);
-        TextView genre = (TextView) convertView.findViewById(R.id.genre);
-        TextView year = (TextView) convertView.findViewById(R.id.releaseYear);
 
         // getting movie data
         Movie movie = movieItems.get(position);
         // thumbnail image
         thumbNail.setImageUrl( movie.getThumbnailUrl(), imageLoader );
         //title
-        title.setText(movie.getTitle());
+        holder.title.setText(movie.getTitle());
         //rating
-        rating.setText("Rating: " + String.valueOf(movie.getRating()));
+        holder.rating.setText("Rating: " + String.valueOf(movie.getRating()));
 
         // genre
         String genreStr = "";
@@ -83,11 +93,19 @@ public class CustomListAdapter extends BaseAdapter
             genreStr += str + ", ";
         }
         genreStr = genreStr.length() > 0 ? genreStr.substring(0,genreStr.length() - 2) : genreStr;
-        genre.setText(genreStr);
+        holder.genre.setText(genreStr);
 
         // release year
-        year.setText(String.valueOf(movie.getYear()));
+        holder.year.setText( String.valueOf(movie.getYear()) );
 
         return convertView;
+    }
+
+    static class ViewHolder
+    {
+        TextView title;
+        TextView rating;
+        TextView genre;
+        TextView year;
     }
 }
