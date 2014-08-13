@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Volley</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_list_view_facebook_with_volley">ListViewFacebookWithVolley</string>
+    <string name="title_activity_main">MainActivity</string>
+
+</resources>
